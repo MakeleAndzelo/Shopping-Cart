@@ -13,8 +13,8 @@ class HomeController
 	{
 		$products = $product->get();
 
-		die(var_dump($products->first()->title));
-
-		return $view->render($response, 'home.twig');
+		return $view->render($response, 'home.twig', [
+			'products' => $products
+		]);
 	}
 }
