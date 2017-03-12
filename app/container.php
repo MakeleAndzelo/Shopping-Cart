@@ -9,11 +9,16 @@ use Slim\Views\TwigExtension;
 use Cart\Support\Storage\Contracts\StorageInterface;
 use Cart\Support\Storage\SessionStorage;
 use Cart\Basket\Basket;
+use Cart\Validation\Contracts\ValidatorInterface;
+use Cart\Validation\Validator;
 
 return [
 	'router' => get(Router::class),
 	StorageInterface::class => function(ContainerInterface $c) {
 		return new SessionStorage('cart');
+	},
+	ValidatorInterface::class => function(ContainerInterface $c) {
+		return new Validator;
 	},
 	Basket::class => function(ContainerInterface $c) {
 		return new Basket(

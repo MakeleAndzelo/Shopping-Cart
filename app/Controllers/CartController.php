@@ -8,6 +8,7 @@ use Slim\Views\Twig;
 use Cart\Models\Product;
 use Cart\Basket\Basket;
 use Slim\Router;
+use Cart\Basket\Exceptions\QuantityDrainedException;
 
 class CartController
 {
@@ -22,7 +23,7 @@ class CartController
 
 	public function index(Response $response, Request $request, Twig $view)
 	{
-
+		$this->basket->refresh();
 		return $view->render($response, 'cart/index.twig');
 	}
 
@@ -36,6 +37,23 @@ class CartController
 
 		try {
 			$this->basket->add($product, $quantity);
+		} catch (QuantityDrainedException $e) {
+			//
+		}
+
+		return $response->withRedirect($router->pathFor('cart.index'));
+	}
+
+	public function update($slug, Response $response, Request $request, Router $router)
+	{
+		$product = $this->product->where('slug', $slug)->first();
+
+		if (!$product) {
+			return $response->withRedirect($router->pathFor('home'));
+		}
+
+		try {
+			$this->basket->update($product, $request->getParam('quantity'));
 		} catch (QuantityDrainedException $e) {
 			//
 		}
