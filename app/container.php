@@ -4,6 +4,8 @@ use function DI\get;
 use Slim\Views\Twig;
 use Interop\Container\ContainerInterface;
 use Cart\Models\Product;
+use Cart\Models\Customer;
+use Cart\Models\Address;
 use Slim\Router;
 use Slim\Views\TwigExtension;
 use Cart\Support\Storage\Contracts\StorageInterface;
@@ -42,5 +44,11 @@ return [
 	},
 	Product::class => function() {
 		return new Product;
+	},
+	Customer::class => function() {
+		return new Customer;
+	},
+	Address::class => function() {
+		return new Address;
 	}
 ];

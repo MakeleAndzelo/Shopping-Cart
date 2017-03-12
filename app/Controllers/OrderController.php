@@ -10,6 +10,9 @@ use Slim\Views\Twig;
 use Cart\Basket\Basket;
 use Slim\Router;
 use Cart\Validation\Form\OrderForm;
+use Cart\Models\Customer;
+use Cart\Models\Address;
+
 
 class OrderController
 {
@@ -43,12 +46,47 @@ class OrderController
 			return $response->withRedirect($this->router->pathFor('cart.index'));
 		}
 
-		$validation = $this->validator->validate($request, OrderForm::rules());
+		// $validation = $this->validator->validate($request, OrderForm::rules());
 
-		if ($validation->fails()) {
-			return $response->withRedirect($this->router->pathFor('order.index'));
+		// if ($validation->fails()) {
+		// 	return $response->withRedirect($this->router->pathFor('order.index'));
+		// }
+
+		$hash = bin2hex(random_bytes(32));
+
+		$customer = Customer::firstOrCreate([
+			'email' => $request->getParam('email'),
+			'name' => $request->getParam('name')
+		]);
+
+		$address = Address::firstOrCreate([
+			'address1' => $request->getParam('address1'),
+			'address2' => $request->getParam('address2'),
+			'city' => $request->getParam('city'),
+			'postal_code' => $request->getParam('postal_code')
+		]);	
+
+		$order = $customer->orders()->create([
+			'hash' => $hash,
+			'total' => $this->basket->subTotal() + 5,
+			'paid' => false,
+			'address_id' => $address->id
+		]);
+
+		$order->products()->saveMany(
+			$this->basket->all(),
+			$this->getQuantity($this->basket->all())
+		);
+	}
+
+	protected function getQuantity($items)
+	{
+		$quantities = [];
+
+		foreach($items as $item) {
+			$quantities[] = ['quantity' => $item->quantity];
 		}
 
-		die('order created');
+		return $quantities;
 	}
 }
