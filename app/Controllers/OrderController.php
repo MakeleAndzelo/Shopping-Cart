@@ -12,6 +12,7 @@ use Slim\Router;
 use Cart\Validation\Form\OrderForm;
 use Cart\Models\Customer;
 use Cart\Models\Address;
+use Braintree_Transaction;
 
 
 class OrderController
@@ -46,6 +47,10 @@ class OrderController
 			return $response->withRedirect($this->router->pathFor('cart.index'));
 		}
 
+		if(!$request->getParam('payment_method_nonce')) {
+			return $response->withRedirect($this->router->pathFor('order.index'));
+		}
+
 		// $validation = $this->validator->validate($request, OrderForm::rules());
 
 		// if ($validation->fails()) {
@@ -77,6 +82,16 @@ class OrderController
 			$this->basket->all(),
 			$this->getQuantity($this->basket->all())
 		);
+
+		$result = Braintree_Transaction::sale([
+			'amount' => $this->basket->subTotal(),
+			'paymentMethodNonce' => $request->getParam('payment_method_nonce'),
+			'options' => [
+				'submitForSettlement' => True
+			]
+		]);
+
+		die(var_dump($result));
 	}
 
 	protected function getQuantity($items)

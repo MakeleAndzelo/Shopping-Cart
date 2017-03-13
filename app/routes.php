@@ -9,3 +9,5 @@ $app->post('/cart/{slug}', ['Cart\Controllers\CartController', 'update'])->setNa
 
 $app->get('/order', ['Cart\Controllers\OrderController', 'index'])->setName('order.index');
 $app->post('/order', ['Cart\Controllers\OrderController', 'create'])->setName('order.create');
+
+$app->get('/braintree/token', ['Cart\Controllers\BraintreeController', 'token'])->setName('braintree.token');

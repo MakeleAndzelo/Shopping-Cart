@@ -86,5 +86,26 @@
 				</div>
 			</div>
 		</div>
+		<div class="row">
+			<h3>Payment</h3>
+			<hr>
+		  	<div id="payment"></div>
+		</div>
 	</form>
+{% endblock %}
+
+{% block scripts %}
+	<script src="https://js.braintreegateway.com/js/braintree-2.31.0.min.js"></script>
+	<script>
+	
+		$.ajax({
+			url: "{{ path_for('braintree.token') }}",
+			type: 'get',
+			dataType: 'json'
+		}).done(function(data){
+			braintree.setup(data.token, "dropin", {
+				container: "payment"
+			});
+		});
+	</script>
 {% endblock %}

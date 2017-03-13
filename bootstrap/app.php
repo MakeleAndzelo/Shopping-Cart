@@ -3,6 +3,7 @@
 use Cart\App;
 use Slim\Views\Twig;
 use Illuminate\Database\Capsule\Manager as Capsule;
+use Braintree_Configuration;
 use Dotenv\Dotenv;
 
 
@@ -31,6 +32,11 @@ $capsule->addConnection([
 
 $capsule->setAsGlobal();
 $capsule->bootEloquent();
+
+Braintree_Configuration::environment($_ENV['BT_ENVIRONMENT']);
+Braintree_Configuration::merchantId($_ENV['BT_MERCHANT_ID']);
+Braintree_Configuration::publicKey($_ENV['BT_PUBLIC_KEY']);
+Braintree_Configuration::privateKey($_ENV['BT_PRIVATE_KEY']);
 
 require __DIR__ . '/../app/routes.php';
 
